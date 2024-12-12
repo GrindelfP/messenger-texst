@@ -1,0 +1,23 @@
+2024-Dec-12 13:30:28 - SERVER - Client-735 joined the chat.
+2024-Dec-12 13:30:34 - Client-735 - Hey, hey, hey!
+2024-Dec-12 13:30:50 - Client-735 - What's up???
+2024-Dec-12 13:31:00 - SERVER - Client-696 joined the chat.
+2024-Dec-12 13:31:09 - Client-696 - BANG!
+2024-Dec-12 13:31:45 - Client-696 - ♪♪Somebody ones told me the world is gonna roll me...♪♪
+2024-Dec-12 13:32:25 - Client-735 - I aint the sharpest tool in the shade♪♪♪♪♪
+2024-Dec-12 13:33:26 - Client-696 - Shrek out!
+2024-Dec-12 13:33:36 - Client-735 - Donkey out!
+2024-Dec-12 13:34:48 - SERVER - Client-735 left the chat.
+2024-Dec-12 13:34:50 - SERVER - Client-696 left the chat.
+2024-Dec-12 14:00:18 - SERVER - Client-99 joined the chat.
+2024-Dec-12 14:00:28 - SERVER - Client-989 joined the chat.
+2024-Dec-12 14:00:58 - Client-99 - hey
+2024-Dec-12 14:01:01 - Client-989 - hey
+2024-Dec-12 14:01:04 - SERVER - Client-989 left the chat.
+2024-Dec-12 14:01:06 - SERVER - Client-99 left the chat.
+2024-Dec-12 14:02:46 - SERVER - Client-180 joined the chat.
+2024-Dec-12 14:03:01 - SERVER - Client-68 joined the chat.
+2024-Dec-12 14:03:19 - Client-180 - heyhey
+2024-Dec-12 14:03:29 - Client-68 - helo
+2024-Dec-12 14:03:39 - SERVER - Client-180 left the chat.
+2024-Dec-12 14:03:41 - SERVER - Client-68 left the chat.
