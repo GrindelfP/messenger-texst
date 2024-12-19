@@ -1,7 +1,5 @@
 package to.grindelf.messengertexst.server;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,16 +14,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static to.grindelf.messengertexst.utils.Constants.*;
 
 public class ChatServer {
-    private static final int PORT = SERVER_PORT;
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private static final SimpleDateFormat dateFormat = DATE_FORMAT;
-    private static final String chatHistory = HISTORY_FILE;
-    private static final String messageHistory = readMessageHistory();
+    private static String messageHistory;
 
     public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port " + PORT);
+        try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+            System.out.println("Server started on port " + SERVER_PORT);
+
+            messageHistory = readMessageHistory();
+            System.out.println("Message history loaded: ");
             System.out.println(messageHistory);
+
             while (true) {
                 Socket socket = serverSocket.accept();
                 ClientHandler clientHandler = new ClientHandler(socket);
@@ -37,15 +37,23 @@ public class ChatServer {
         }
     }
 
-    static void broadcast(String message, ClientHandler sender, boolean historyBroadcast) {
+    static void broadcast(String message, ClientHandler sender, boolean historyBroadcast, boolean toAllClients, boolean connectionMessage) {
         if (!historyBroadcast) {
             System.out.println(message);
             saveMessageToHistory(message);
         }
+
+        // Обновляем историю сообщений для новых клиентов
+        if (!clients.isEmpty() && !historyBroadcast) {
+            messageHistory = readMessageHistory();
+        }
+
         for (ClientHandler client : clients) {
-            if (historyBroadcast) {
+            if (historyBroadcast && client == sender) {
                 client.sendMessage(message);
-            } else if (client != sender) {
+            } else if (toAllClients && client != sender) {
+                client.sendMessage(message);
+            } else if (connectionMessage) {
                 client.sendMessage(message);
             }
         }
@@ -53,7 +61,7 @@ public class ChatServer {
 
     private static void saveMessageToHistory(String message) {
         try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter(chatHistory, true))
+                new FileWriter(HISTORY_FILE, true))
         ) {
             writer.write(message);
             writer.newLine();
@@ -62,9 +70,9 @@ public class ChatServer {
         }
     }
 
-    private static @NotNull String readMessageHistory() {
+    private static String readMessageHistory() {
         try {
-            return Files.readString(Paths.get(chatHistory));
+            return Files.readString(Paths.get(HISTORY_FILE));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,55 +89,42 @@ public class ChatServer {
 
         @Override
         public void run() {
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()))
-            ) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                 out = new PrintWriter(socket.getOutputStream(), true);
                 clientName = "Client-" + new Random().nextInt(1000);
 
+                // Отправить только историю чата новому клиенту
                 synchronized (clients) {
-                    broadcast(
-                            messageHistory,
-                            this,
-                            true
-                    );
+                    broadcast(messageHistory, this, true, false, false);
                 }
 
-                broadcast(
-                        dateFormat.format(
-                                new Date()) + " - SERVER - " + clientName + " joined the chat.",
-                        this,
-                        false
-                );
+                // Уведомить всех о подключении клиента
+                String connectMessage = dateFormat.format(new Date()) + " - SERVER - " + clientName + " joined the chat.";
+                broadcast(connectMessage, this, false, true, true);
 
                 String message;
-
                 while ((message = in.readLine()) != null) {
-                    broadcast(
-                            dateFormat.format(
-                                    new Date()) + " - " + clientName + " - " + message,
-                            this,
-                            false
-                    );
+                    String formattedMessage = dateFormat.format(new Date()) + " - " + clientName + " - " + message;
+                    broadcast(formattedMessage, this, false, true, false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                synchronized (clients) {
-                    clients.remove(this);
-                }
-                broadcast(
-                        dateFormat.format(
-                                new Date()) + " - SERVER - " + clientName + " left the chat.",
-                        this,
-                        false
-                );
+                handleClientDisconnect();
             }
+        }
+
+        private void handleClientDisconnect() {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            synchronized (clients) {
+                clients.remove(this);
+            }
+            String disconnectMessage = dateFormat.format(new Date()) + " - SERVER - " + clientName + " left the chat.";
+            broadcast(disconnectMessage, this, false, true, true);
         }
 
         void sendMessage(String message) {

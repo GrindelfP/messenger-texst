@@ -15,9 +15,4 @@
 2024-Dec-12 14:01:01 - Client-989 - hey
 2024-Dec-12 14:01:04 - SERVER - Client-989 left the chat.
 2024-Dec-12 14:01:06 - SERVER - Client-99 left the chat.
-2024-Dec-12 14:02:46 - SERVER - Client-180 joined the chat.
-2024-Dec-12 14:03:01 - SERVER - Client-68 joined the chat.
-2024-Dec-12 14:03:19 - Client-180 - heyhey
-2024-Dec-12 14:03:29 - Client-68 - helo
-2024-Dec-12 14:03:39 - SERVER - Client-180 left the chat.
-2024-Dec-12 14:03:41 - SERVER - Client-68 left the chat.
+
